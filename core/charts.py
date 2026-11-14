@@ -95,3 +95,50 @@ def trend_chart(df, indicator):
         height=420, margin=dict(l=40, r=20, t=60, b=40),
     )
     return fig
+
+
+
+def bp_chart(df):
+    
+    fig = go.Figure()
+    if df is None or df.empty or "systolic_bp" not in df.columns or "diastolic_bp" not in df.columns:
+        fig.update_layout(template="plotly_dark", title="Blood pressure: no data yet")
+        return fig
+
+    d = df[["timestamp", "systolic_bp", "diastolic_bp"]].dropna().copy()
+    d["timestamp"] = pd.to_datetime(d["timestamp"])
+    d = d.sort_values("timestamp")
+
+    fig.add_trace(go.Scatter(
+        x=d["timestamp"], y=d["systolic_bp"], mode="lines+markers", name="Systolic (top number)",
+        line=dict(color=theme["line"], width=2), marker=dict(size=6),
+        hovertemplate="%{x|%d %b}: %{y} mmHg<extra>Systolic</extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=d["timestamp"], y=d["diastolic_bp"], mode="lines+markers", name="Diastolic (bottom number)",
+        line=dict(color=theme["avg"], width=2), marker=dict(size=6),
+        hovertemplate="%{x|%d %b}: %{y} mmHg<extra>Diastolic</extra>",
+    ))
+
+    # dotted limit lines, taken from thresholds.py: top of green = Watch, top of amber = Act
+    for col, short in [("systolic_bp", "Systolic"), ("diastolic_bp", "Diastolic")]:
+        t = THRESHOLDS[col]
+        for limit, status, word in [(t["green"][1], "amber", "Watch above"), (t["amber"][1], "red", "Act at")]:
+            fig.add_hline(
+                y=limit, line_dash="dot", line_color= status_colours[status], line_width=1,
+                annotation_text=f"{short}: {word} {limit:g}", annotation_position="top left",
+                annotation_font=dict(color= status_colours[status], size=11),
+            )
+
+    fig.update_layout(
+        template="plotly_dark",
+        title="Blood pressure over time",
+        xaxis_title="Date", yaxis_title="Blood pressure (mmHg)",
+        paper_bgcolor=theme["bg"], plot_bgcolor=theme["panel"],
+        font=dict(color=theme["text"]),
+        xaxis=dict(gridcolor=theme["grid"]),
+        yaxis=dict(gridcolor=theme["grid"]),
+        legend=dict(orientation="h", y=-0.2),
+        height=420, margin=dict(l=40, r=20, t=60, b=40),
+    )
+    return fig
