@@ -56,7 +56,7 @@ This was a deliberate choice:
 You need Python 3.10 or newer. The app was developed with Python 3.13.
 
 ```bash
-git clone [your repo link]
+git clone git clone https://github.com/JoanneBabu01/astronaut_health_checkin.git
 cd astronaut_health_checkin
 python -m pip install -r requirements.txt
 python -m streamlit run app.py
@@ -78,15 +78,15 @@ All readings in this project are **simulated**. They are not real astronaut data
 
 | Path | What it holds | Owner |
 |---|---|---|
-| `app.py` | Home page | Role 3 |
-| `pages/` | Log Vitals, Body Map, Trends, Mission Tasks, Learn | Roles 2, 3, 4 |
-| `core/data.py` | Loads and saves data | Role 1 |
-| `core/thresholds.py` | Healthy ranges for each indicator | Role 1 |
-| `core/assessment.py` | Turns a reading into green, amber or red | Role 1 |
-| `core/charts.py` | All charts | Role 2 |
-| `content/guidance.py` | Advice text and how-to-measure steps | Role 4 |
-| `content/learn.py` | Space hazard to indicator table | Role 4 |
-| `data/sample_crew_log.csv` | Simulated readings | Role 1 |
+| `app.py` | Home page | Rebecca |
+| `pages/` | Log Vitals, Body Map, Trends, Mission Tasks, Learn | Latisha, Rebecca, Joanne |
+| `core/data.py` | Loads and saves data | Rochelle |
+| `core/thresholds.py` | Healthy ranges for each indicator | Rochelle |
+| `core/assessment.py` | Turns a reading into green, amber or red | Rochelle |
+| `core/charts.py` | All charts | Latisha |
+| `content/guidance.py` | Advice text and how-to-measure steps | Joanne|
+| `content/learn.py` | Space hazard to indicator table | Joanne |
+| `data/sample_crew_log.csv` | Simulated readings | Rochelle |
 
 ## Limitations
 
