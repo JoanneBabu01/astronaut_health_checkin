@@ -245,3 +245,74 @@ def body_map_figure(statuses):
         yaxis=dict(visible=False, range=[0, 105], fixedrange=True, scaleanchor="x"),
     )
     return fig
+
+
+
+def _health_score(indicator, value):
+    
+    bands = get_bands(indicator)
+    g_lo, g_hi = next((lo, hi) for lo, hi, s in bands if s == "green")
+    if g_lo <= value < g_hi:
+        return 100.0
+
+    if value < g_lo:
+        side = [b for b in reversed(bands) if b[1] <= g_lo]      # bands below green, nearest first
+        dist = g_lo - value
+    else:
+        side = [b for b in bands if b[0] >= g_hi]                # bands above green, nearest first
+        dist = value - g_hi
+    if not side:
+        return 100.0          # green runs right to the edge of the plot range (e.g. mood 5)
+
+    score = 100.0
+    for lo, hi, status in side:
+        width = hi - lo
+        target = 50.0 if status == "amber" else 0.0
+        if dist <= width:
+            return score + (target - score) * dist / width
+        dist -= width
+        score = target
+    return 0.0
+
+
+def health_radar(latest):
+    """Health snapshot: one spoke per indicator, scaled 0-100 (100 = healthy).
+    'latest' is one row of readings, e.g. df.iloc[-1]. Returns a Plotly figure."""
+    labels, scores, raw = [], [], []
+    for ind, t in THRESHOLDS.items():
+        if ind in latest and pd.notna(latest[ind]):
+            labels.append(t["label"])
+            scores.append(round(_health_score(ind, float(latest[ind])), 1))
+            raw.append(f"{latest[ind]:g}" + ("" if t["unit"] == "1-5" else " " + t["unit"]))
+
+    fig = go.Figure()
+    if not labels:
+        fig.update_layout(template="plotly_dark", title="Health snapshot: no data yet")
+        return fig
+
+    closed = lambda items: items + items[:1]    # repeat the first point so the shape closes
+    fig.add_trace(go.Scatterpolar(
+        r=closed([50] * len(labels)), theta=closed(labels), mode="lines", name="Watch level (50)",
+        line=dict(color=status_colours["amber"], width=1, dash="dot"), hoverinfo="skip",
+    ))
+    fig.add_trace(go.Scatterpolar(
+        r=closed(scores), theta=closed(labels), mode="lines+markers", name="Latest reading",
+        fill="toself", fillcolor=_rgba(theme["avg"], 0.25),
+        line=dict(color=theme["line"], width=2), marker=dict(size=7),
+        customdata=closed(raw),
+        hovertemplate="%{theta}<br>%{customdata}<br>Score: %{r:.0f} / 100<extra></extra>",
+    ))
+
+    fig.update_layout(
+        template="plotly_dark",
+        title="Health snapshot (100 = healthy)",
+        paper_bgcolor=theme["bg"], font=dict(color=theme["text"]),
+        polar=dict(
+            bgcolor=theme["panel"],
+            radialaxis=dict(range=[0, 100], tickvals=[0, 50, 100], gridcolor=theme["grid"], linecolor=theme["grid"]),
+            angularaxis=dict(gridcolor=theme["grid"], linecolor=theme["grid"]),
+        ),
+        legend=dict(orientation="h", y=-0.1),
+        height=480, margin=dict(l=60, r=60, t=60, b=40),
+    )
+    return fig

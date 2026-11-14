@@ -1,5 +1,5 @@
-from core.charts import body_map_figure
+import pandas as pd
+from core.charts import health_radar
 
-statuses = {"brain": "amber", "heart": "red", "blood": "green", "core": "green", "bones_muscles": "green"}
-body_map_figure(statuses).show()
-
+df = pd.read_csv("data/sample_crew_log.csv")
+health_radar(df.iloc[-1]).show()
