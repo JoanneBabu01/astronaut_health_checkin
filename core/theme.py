@@ -173,3 +173,38 @@ header[data-testid="stHeader"] { background: transparent !important; }
 </style>
 <div class="space-fx"><div class="shoot"></div><div class="const c1"></div><div class="const c2"></div></div>
 """
+
+def _build_css():
+    return (_CSS
+            .replace("__BG__", THEME["bg"])
+            .replace("__TEXT__", THEME["text"])
+            .replace("__LINE__", THEME["line"])
+            .replace("__AVG__", THEME["avg"])
+            .replace("__RED__", STATUS_COLORS["red"])
+            .replace("__STARS_A__", _star_layer(7, 22, 300))
+            .replace("__STARS_B__", _star_layer(21, 16, 430))
+            .replace("__BIG_DIPPER__", BIG_DIPPER)
+            .replace("__CASSIOPEIA__", CASSIOPEIA))
+
+
+def inject_theme():
+    """Call once at the top of every page. Adds the whole space look."""
+    st.markdown(_build_css(), unsafe_allow_html=True)
+
+
+def card(html, status=None):
+    """A glass card. Pass status="red" to make it pulse red. 'html' can be any HTML text."""
+    cls = "glass alert-red" if status == "red" else "glass"
+    st.markdown(f'<div class="{cls}">{html}</div>', unsafe_allow_html=True)
+
+
+def mission_clock(start_date, now=None):
+    """A small 'Mission Day N' banner. start_date: the first day of the mission, e.g. "2026-09-25".
+    now: optional, e.g. the latest check-in time; by default the current time."""
+    start = pd.to_datetime(start_date).date()
+    current = pd.to_datetime(now) if now is not None else datetime.now(timezone.utc)
+    day = (current.date() - start).days + 1
+    card(
+        f'<div class="mission-clock"><span class="day">Mission Day {day}</span>'
+        f'<span class="time">{current:%d %b %Y, %H:%M} UTC</span></div>'
+    )
