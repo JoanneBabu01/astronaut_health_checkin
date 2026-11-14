@@ -9,9 +9,6 @@ st.title("APP NAME")
 st.caption("Your personalised health monitoring buddy")
 env= sidebar()
 
-#replace w 'from core.data import load_log' after merging
-load_log()
-
 #replace w 'from core.assessment import assess' after merging
 def assess(indicator, value):
     return "green"
@@ -29,9 +26,9 @@ INDICATORS = {
 LABELS = {"green": "🟢 OK", "amber": "🟠 Watch", "red": "🔴 Act"}
 
 df= load_log()
-latest, previous= df.loc[-1], df.loc[-2]
+latest, previous= df.iloc[-1], df.iloc[-2]
 
-st.subheader(f"Latest check-in: {latest['timestamp']:%d %b, %H:%M}·{env}")
+st.subheader(f"Latest check-in: {latest['timestamp']:%d %b, %H:%M} · {env}")
 
 cols = st.columns(4)
 for i, (col,(label, unit)) in enumerate(INDICATORS.items()):
