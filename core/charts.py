@@ -142,3 +142,43 @@ def bp_chart(df):
         height=420, margin=dict(l=40, r=20, t=60, b=40),
     )
     return fig
+
+    
+
+def _status_from_bands(indicator, value):
+    bands = get_bands(indicator)
+    if value < bands[0][0]:
+        return bands[0][2]
+    for lo, hi, status in bands:
+        if lo <= value < hi:
+            return status
+    return bands[-1][2]
+
+
+def status_gauge(indicator, value):
+    t = THRESHOLDS[indicator]
+    status = _status_from_bands(indicator, value)
+    unit = "" if t["unit"] == "1-5" else " " + t["unit"]
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=value,
+        number=dict(suffix=unit, font=dict(color=theme["text"])),
+        title=dict(
+            text=f"{t['label']}<br><span style='color:{status_colours[status]}'>{status_words[status]}</span>",
+            font=dict(color=theme["text"], size=16),
+        ),
+        gauge=dict(
+            axis=dict(range=list(t["plot_range"]), tickcolor=theme["text"]),
+            bar=dict(color=theme["line"], thickness=0.3),
+            bgcolor=theme["panel"],
+            borderwidth=0,
+            steps=[dict(range=[lo, hi], color=_rgba(status_colours[s], 0.45)) for lo, hi, s in get_bands(indicator)],
+        ),
+    ))
+    fig.update_layout(
+        template="plotly_dark",
+        paper_bgcolor=theme["bg"], font=dict(color=theme["text"]),
+        height=280, margin=dict(l=30, r=30, t=80, b=20),
+    )
+    return fig
