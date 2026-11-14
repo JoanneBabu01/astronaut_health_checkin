@@ -39,3 +39,59 @@ def _add_bands(fig, indicator, ymin, ymax):
             annotation_text = status_words[status], annotation_position="top right",
             annotation_font=dict(color = status_colours[status], size=12),
         )
+
+
+def trend_chart(df, indicator):
+    
+    fig = go.Figure()
+    if indicator not in THRESHOLDS or df is None or df.empty or indicator not in df.columns:
+        fig.update_layout(template="plotly_dark", title=f"{indicator}: no data yet")
+        return fig
+
+    t = THRESHOLDS[indicator]
+    name, unit = t["label"], t["unit"]
+    hover_unit = "" if unit == "1-5" else unit    
+
+    d = df[["timestamp", indicator]].dropna().copy()
+    d["timestamp"] = pd.to_datetime(d["timestamp"])
+    d = d.sort_values("timestamp")
+    d["value"] = d[indicator]
+    d["avg7"] = d["value"].rolling(7, min_periods=1).mean()
+
+    # visible y-range: mood and stress use thresholds.py plot_range, others zoom to the data
+    if indicator in SCORE_INDICATORS:
+        ymin, ymax = t["plot_range"]
+    else:
+        span = max(d["value"].max() - d["value"].min(), 1e-6)
+        pad = span * 0.15
+        ymin, ymax = d["value"].min() - pad, d["value"].max() + pad
+
+    _add_bands(fig, indicator, ymin, ymax)
+
+    fig.add_trace(go.Scatter(
+        x=d["timestamp"], y=d["value"], mode="lines+markers", name="Daily reading",
+        line=dict(color=theme["line"], width=2), marker=dict(size=6), cliponaxis=False,
+        hovertemplate="%{x|%d %b}: %{y} " + hover_unit + "<extra>Daily</extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=d["timestamp"], y=d["avg7"], mode="lines", name="7-day average",
+        line=dict(color=theme["avg"], width=2, dash="dash"), cliponaxis=False,
+        hovertemplate="%{x|%d %b}: %{y:.1f} " + hover_unit + "<extra>7-day avg</extra>",
+    ))
+
+    yaxis = dict(range=[ymin, ymax], gridcolor=theme["grid"])
+    if indicator in SCORE_INDICATORS:
+        yaxis.update(tickmode="array", tickvals=[1, 2, 3, 4, 5])   
+
+    fig.update_layout(
+        template="plotly_dark",
+        title=f"{name} over time",
+        xaxis_title="Date", yaxis_title=f"{name} ({unit})",
+        paper_bgcolor=theme["bg"], plot_bgcolor=theme["panel"],
+        font=dict(color=theme["text"]),
+        xaxis=dict(gridcolor=theme["grid"]),
+        yaxis=yaxis,
+        legend=dict(orientation="h", y=-0.2),
+        height=420, margin=dict(l=40, r=20, t=60, b=40),
+    )
+    return fig
