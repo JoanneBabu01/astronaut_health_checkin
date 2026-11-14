@@ -16,3 +16,17 @@ def _star_layer(seed, count, tile):
         size = rng.choice([1, 1, 1, 2])
         dots.append(f"radial-gradient({size}px {size}px at {x}px {y}px, {rng.choice(colours)}, transparent)")
     return ", ".join(dots)
+
+def _constellation(points):
+    lines = "".join(
+        f'<line x1="{a[0]}" y1="{a[1]}" x2="{b[0]}" y2="{b[1]}" stroke="rgb(201,167,255)" stroke-width="1.2" stroke-opacity="0.7"/>'
+        for a, b in zip(points, points[1:])
+    )
+    dots = "".join(f'<circle cx="{x}" cy="{y}" r="2.8" fill="white"/>' for x, y in points)
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 130">{lines}{dots}</svg>'
+    return "url(\"data:image/svg+xml," + quote(svg) + "\")"
+
+
+BIG_DIPPER = _constellation([(12, 100), (52, 84), (92, 88), (126, 66), (158, 48), (192, 62), (222, 30)])
+CASSIOPEIA = _constellation([(14, 40), (60, 90), (112, 52), (164, 96), (222, 44)])
+
