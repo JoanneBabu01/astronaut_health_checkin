@@ -35,5 +35,5 @@ for i, (col,(label, unit)) in enumerate(INDICATORS.items()):
     status= assess(col, latest[col])
     with cols[i%4]:
         st.metric(label, f"{latest[col]} {unit}",
-                  delta=round(float(latest[col] - previous[col]), 1))
+                  delta=round(float(latest[col] - previous[col]), 1), delta_color="inverse")
         st.caption(LABELS[status])
