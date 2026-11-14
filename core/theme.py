@@ -1,3 +1,8 @@
+# core/theme.py
+# Owner: Role 2 (Latisha)
+# The space look: starfield, shooting star, fading constellations, header twinkle,
+# glass cards, red-alert glow and a mission clock.
+# Everyone else just calls inject_theme() once at the top of every page.
 import random
 from datetime import datetime, timezone
 from urllib.parse import quote
@@ -7,6 +12,8 @@ import streamlit as st
 
 from core.charts import status_colours, theme
 
+
+# ---------- Stars: little dots scattered at fixed random places ----------
 def _star_layer(seed, count, tile):
     rng = random.Random(seed)
     colours = ["#ffffff", "#c9a7ff", "#7aa2ff", "#e8e8ff"]
@@ -17,18 +24,52 @@ def _star_layer(seed, count, tile):
         dots.append(f"radial-gradient({size}px {size}px at {x}px {y}px, {rng.choice(colours)}, transparent)")
     return ", ".join(dots)
 
-def _constellation(points):
-    lines = "".join(
-        f'<line x1="{a[0]}" y1="{a[1]}" x2="{b[0]}" y2="{b[1]}" stroke="rgb(201,167,255)" stroke-width="1.2" stroke-opacity="0.7"/>'
-        for a, b in zip(points, points[1:])
+
+# ---------- Constellations: a little web that GROWS, while its starting point fades away ----------
+# Drawn as a tiny animated SVG used as a background image.
+CYCLE = 26     # seconds for one full grow-and-fade loop
+STEP = 2.4     # seconds each line takes to draw
+
+
+def _constellation(points, edges, phase=0):
+    # depth = how many lines away from the first star (it decides when a star lights up)
+    depth = {0: 0}
+    for _ in edges:
+        for a, b in edges:
+            if a in depth and b not in depth:
+                depth[b] = depth[a] + 1
+    css = (
+        f"line{{stroke:rgb(201,167,255);stroke-width:1.4;stroke-linecap:round;"
+        f"stroke-dasharray:100 100;stroke-dashoffset:100;animation:seg {CYCLE}s linear infinite}}"
+        f"circle{{fill:white;opacity:0;animation:node {CYCLE}s linear infinite}}"
+        "@keyframes seg{0%{stroke-dashoffset:100}9.2%{stroke-dashoffset:0}30.8%{stroke-dashoffset:0}"
+        "40%{stroke-dashoffset:-100}100%{stroke-dashoffset:-100}}"
+        "@keyframes node{0%{opacity:0}3%{opacity:1}31%{opacity:1}40%{opacity:0}100%{opacity:0}}"
     )
-    dots = "".join(f'<circle cx="{x}" cy="{y}" r="2.8" fill="white"/>' for x, y in points)
-    svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 130">{lines}{dots}</svg>'
+    lines = "".join(
+        f'<line pathLength="100" x1="{points[a][0]}" y1="{points[a][1]}" x2="{points[b][0]}" y2="{points[b][1]}" '
+        f'style="animation-delay:{depth[a] * STEP - phase:.1f}s"/>'
+        for a, b in edges
+    )
+    dots = "".join(
+        f'<circle cx="{points[i][0]}" cy="{points[i][1]}" r="2.8" style="animation-delay:{depth[i] * STEP - phase:.1f}s"/>'
+        for i in depth
+    )
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 130"><style>{css}</style>{lines}{dots}</svg>'
     return "url(\"data:image/svg+xml," + quote(svg) + "\")"
 
 
-BIG_DIPPER = _constellation([(12, 100), (52, 84), (92, 88), (126, 66), (158, 48), (192, 62), (222, 30)])
-CASSIOPEIA = _constellation([(14, 40), (60, 90), (112, 52), (164, 96), (222, 44)])
+# star positions, and which stars are joined by a line (first star = starting point)
+BIG_DIPPER = _constellation(
+    [(12, 100), (52, 84), (92, 88), (126, 66), (158, 48), (192, 62), (222, 30), (98, 122), (150, 8)],
+    [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (2, 7), (4, 8)],
+)
+CASSIOPEIA = _constellation(
+    [(14, 40), (60, 90), (112, 52), (164, 96), (222, 44), (108, 8), (170, 126)],
+    [(0, 1), (1, 2), (2, 3), (3, 4), (2, 5), (3, 6)],
+    phase=13,
+)
+
 
 _CSS = """
 <style>
@@ -38,8 +79,7 @@ _CSS = """
 .stApp {
     background: radial-gradient(ellipse at 20% 10%, #1b1b55 0%, __BG__ 55%, #05051a 100%) !important;
     color: __TEXT__;
-    position: relative;
-    z-index: 0;
+    isolation: isolate;
 }
 [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {
     background: transparent !important;
@@ -90,15 +130,10 @@ header[data-testid="stHeader"] { background: transparent !important; }
 .space-fx .const {
     position: absolute; width: 240px; height: 130px;
     background-repeat: no-repeat; background-size: contain;
-    opacity: 0;
-    animation: fade-in-out 16s ease-in-out infinite;
+    opacity: 0.9;
 }
 .space-fx .c1 { top: 9%; right: 4%; background-image: __BIG_DIPPER__; }
-.space-fx .c2 { bottom: 8%; left: 24%; background-image: __CASSIOPEIA__; animation-delay: 8s; }
-@keyframes fade-in-out {
-    0%, 100% { opacity: 0; }
-    35%, 65% { opacity: 0.55; }
-}
+.space-fx .c2 { bottom: 8%; left: 24%; background-image: __CASSIOPEIA__; }
 
 /* ---------- Headings: space font, sparkle on hover ---------- */
 .stApp h1, .stApp h2, .stApp h3 {
@@ -163,24 +198,25 @@ header[data-testid="stHeader"] { background: transparent !important; }
 
 /* ---------- Reduced motion: switch every animation off ---------- */
 @media (prefers-reduced-motion: reduce) {
-    .stApp::before, .stApp::after, .space-fx .shoot, .space-fx .const,
+    .stApp::before, .stApp::after, .space-fx .shoot,
     .alert-red, .stApp h1:hover::after, .stApp h2:hover::after, .stApp h3:hover::after {
         animation: none !important;
     }
     .space-fx .shoot { display: none; }
-    .space-fx .const { opacity: 0.35; }
+    .space-fx .const { display: none; }
 }
 </style>
 <div class="space-fx"><div class="shoot"></div><div class="const c1"></div><div class="const c2"></div></div>
 """
 
+
 def _build_css():
     return (_CSS
-            .replace("__BG__", THEME["bg"])
-            .replace("__TEXT__", THEME["text"])
-            .replace("__LINE__", THEME["line"])
-            .replace("__AVG__", THEME["avg"])
-            .replace("__RED__", STATUS_COLORS["red"])
+            .replace("__BG__", theme["bg"])
+            .replace("__TEXT__", theme["text"])
+            .replace("__LINE__", theme["line"])
+            .replace("__AVG__", theme["avg"])
+            .replace("__RED__", status_colours["red"])
             .replace("__STARS_A__", _star_layer(7, 22, 300))
             .replace("__STARS_B__", _star_layer(21, 16, 430))
             .replace("__BIG_DIPPER__", BIG_DIPPER)
