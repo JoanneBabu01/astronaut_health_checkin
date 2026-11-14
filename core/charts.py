@@ -182,3 +182,66 @@ def status_gauge(indicator, value):
         height=280, margin=dict(l=30, r=30, t=80, b=20),
     )
     return fig
+
+
+#Body Map
+
+body_regions = {
+    "brain":         (50, 90),
+    "heart":         (57, 68),
+    "blood":         (43, 62),
+    "core":          (50, 50),
+    "bones_muscles": (50, 25),
+}
+
+# Which indicators belong to which body system (for the detail panel and for working out each colour)
+body_system_indicators = {
+    "brain":         ["mood", "stress", "sleep_hours"],
+    "heart":         ["heart_rate", "systolic_bp", "diastolic_bp"],
+    "blood":         ["blood_glucose"],
+    "core":          ["body_temp"],
+    "bones_muscles": ["exercise_min"],
+}
+
+
+def body_map_figure(statuses):
+    """statuses = {"brain": "green", "heart": "amber", ...}. A missing system shows as green.
+    Returns a Plotly figure with one clickable dot per system, in the order of BODY_REGIONS."""
+    fig = go.Figure()
+
+    body = dict(fillcolor="#24245a", line=dict(color=theme["avg"], width=2), layer="below")
+    fig.add_shape(type="circle", x0=40, x1=60, y0=80, y1=100, **body)    # head
+    fig.add_shape(type="rect", x0=36, x1=64, y0=42, y1=78, **body)       # torso
+    fig.add_shape(type="rect", x0=28, x1=34, y0=38, y1=78, **body)       # left arm
+    fig.add_shape(type="rect", x0=66, x1=72, y0=38, y1=78, **body)       # right arm
+    fig.add_shape(type="rect", x0=38, x1=48, y0=5, y1=40, **body)        # left leg
+    fig.add_shape(type="rect", x0=52, x1=62, y0=5, y1=40, **body)        # right leg
+
+    names = list(body_regions)
+    status_list = [statuses.get(n, "green") for n in names]
+    pretty = [n.replace("_", " ").title() for n in names]
+
+    fig.add_trace(go.Scatter(
+        x=[body_regions[n][0] for n in names],
+        y=[body_regions[n][1] for n in names],
+        mode="markers+text",
+        marker=dict(size=34, color=[status_colours[s] for s in status_list],
+                    line=dict(color="white", width=2)),
+        text=[f"{p}: {status_words[s]}" for p, s in zip(pretty, status_list)],
+        textposition="middle right",
+        textfont=dict(color=theme["text"], size=13),
+        customdata=names,
+        hovertemplate="%{text}<extra></extra>",
+    ))
+
+    fig.update_layout(
+        template="plotly_dark",
+        showlegend=False,
+        paper_bgcolor=theme["bg"], plot_bgcolor=theme["bg"],
+        font=dict(color=theme["text"]),
+        title="Body map: click a system",
+        height=600, margin=dict(l=10, r=10, t=50, b=10),
+        xaxis=dict(visible=False, range=[0, 100], fixedrange=True),
+        yaxis=dict(visible=False, range=[0, 105], fixedrange=True, scaleanchor="x"),
+    )
+    return fig
