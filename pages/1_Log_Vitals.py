@@ -17,9 +17,9 @@ with st.form("checkin"):
     sleep= c2.number_input("Sleep last night (hours)", 0.0, 14.0, 7.5, step=0.5)
     exercise= c1.number_input("Exercise today (minutes)", 0, 300, 90)
     mood= st.select_slider("Mood", options=[1, 2, 3, 4, 5], value=4,
-                            format_func=lambda x: ["Very low", "Low", "Okay", "Good", "Great"][x - 1])
+                           format_func=lambda x: f"{['🌑', '🌒', '🌓', '🌔', '🌕'][x - 1]} {['Very low', 'Low', 'Okay', 'Good', 'Great'][x - 1]}")
     stress= st.select_slider("Stress", options=[1, 2, 3, 4, 5], value=2,
-                              format_func=lambda x: ["Calm", "Mild", "Moderate", "High", "Overwhelmed"][x - 1])
+                             format_func=lambda x: f"{['🌑', '🌒', '🌓', '🌔', '🌕'][x - 1]} {["1- Calm", "2- Mild", "3- Moderate", "4- High", "5- Overwhelmed"][x - 1]}")
     submitted= st.form_submit_button("Save check-in")
 
     if submitted:
@@ -49,7 +49,7 @@ with st.form("checkin"):
                 "exercise_min": "Exercise"}
 
         statuses= {x:assess(x, entry[x])for x in names}
-        overall= overall_status(statuses)
+        overall = overall_status(entry)
 
         if overall == "red":
             st.error("One or more readings need action now.")
@@ -70,7 +70,7 @@ with st.form("checkin"):
             st.write(f"**What to do:** {g['action']}")
             st.write(f"**When to escalate:** {g['escalate']}")
 
-        ok = [names[k] for k in NAMES if k not in problems]
+        ok = [names[k] for k in names if k not in problems]
         if ok:
             st.caption("🟢 Normal: " + ", ".join(ok))
         
