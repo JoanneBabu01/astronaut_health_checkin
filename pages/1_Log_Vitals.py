@@ -2,8 +2,10 @@
 from core.assessment import assess, overall_status 
 from content.guidance import get_guidance
 import streamlit as st
-from ui import sidebar
+from ui.bg_blue import background
+from ui.sidebar import sidebar
 
+bg= background()
 env= sidebar()
 st.title("Log vitals")
 

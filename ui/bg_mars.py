@@ -28,10 +28,7 @@ STARS_CSS = """
     background:
         radial-gradient(ellipse at 15% 20%, rgba(80, 60, 160, 0.25), transparent 50%),
         radial-gradient(ellipse at 85% 75%, rgba(30, 90, 160, 0.20), transparent 55%),
-        /* linear-gradient(180deg, #02030a 0%, #0a1030 55%, #1a1446 100%) !important; */
-        /* linear-gradient(180deg, #020611 0%, #06213f 60%, #0b3a66 100%); */
-        /* linear-gradient(180deg, #05060d 0%, #1b0f1f 55%, #3a1a14 100%); */
-        linear-gradient(160deg, #02040c 0%, #0a1a2e 50%, #0f3b3a 100%);
+        linear-gradient(180deg, #05060d 0%, #1b0f1f 55%, #3a1a14 100%) !important;
     background-attachment: fixed !important;
 }
 @keyframes twinkle {
@@ -51,14 +48,3 @@ STARS_CSS = """
 
 def background():
     st.markdown(STARS_CSS, unsafe_allow_html=True)
-
-ENVIRONMENTS = ["ISS", "Transit", "Lunar base", "Mars base"]
-
-def sidebar():
-    if "env" not in st.session_state:
-        st.session_state.env = ENVIRONMENTS[0]
-    st.session_state.env = st.sidebar.selectbox(
-        "Environment", ENVIRONMENTS,
-        index=ENVIRONMENTS.index(st.session_state.env),
-    )
-    return st.session_state.env
