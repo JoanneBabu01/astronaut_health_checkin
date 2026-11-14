@@ -1,13 +1,5 @@
-import pandas as pd
-<<<<<<< Updated upstream
-from core.charts import bp_chart, status_gauge
+from core.charts import body_map_figure
 
-df = pd.read_csv("data/sample_crew_log.csv")
-bp_chart(df).show()
-status_gauge("heart_rate", 72).show()
-=======
-from core.charts import trend_chart
+statuses = {"brain": "amber", "heart": "red", "blood": "green", "core": "green", "bones_muscles": "green"}
+body_map_figure(statuses).show()
 
-df = pd.read_csv("data/sample_crew_log.csv")
-trend_chart(df, "sleep_hours").show()
->>>>>>> Stashed changes
