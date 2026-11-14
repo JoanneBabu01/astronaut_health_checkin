@@ -1,2 +1,3 @@
-# astronaut_health_checkin
-nasa_hackathonproject
+# Astronaut Health Check-in
+
+(README placeholder - Role 4 (Joanne) will fill this in.)
