@@ -1,8 +1,5 @@
 # content/guidance.py
-# Owner: Role 4 (Joanne)
 # Advice text for each indicator and status.
-# Write for a tired astronaut, not a doctor. Keep each sentence short.
-#
 # Green is one text. For indicators that can go wrong in both directions,
 # amber and red have a "low" text and a "high" text.
 # One-sided indicators (mood, stress, exercise_min) have one text per colour.

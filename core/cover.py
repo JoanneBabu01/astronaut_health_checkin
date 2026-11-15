@@ -1,26 +1,20 @@
 # core/cover.py
-# Owner: Role 2 (Latisha)
-# The cover page shown BEFORE the app: a spaceship paints the screen in dark space colours,
-# a border of space pictures fades in, then a name card appears in the middle.
-#   require_login()  -> put at the top of app.py and every page; returns the astronaut's name
-#   show_cover()     -> draws the cover (require_login calls it for you)
-#   switch_astronaut() -> sign out, back to the cover (e.g. for a sidebar button)
+
 import math
 import random
 from urllib.parse import quote
 
 import streamlit as st
 
-# Paint colours: very dark, like real deep space. Make the numbers smaller for an even darker cover.
 PAINT_A = ("#020310", "#050820", "#0A051F")  # wide base paint
 PAINT_B = ("#06102A", "#0B0826", "#100720")  # softer paint on top
 GLOW = "#23407a"                              # faint glow along the middle of the trail
 CHALK = "#ecebe4"                             # chalk white for the border pictures
 
-W, H = 160, 90          # the picture is drawn on a 160 x 90 grid and stretched to fit the screen
+W, H = 160, 90         
 PAINT_SECONDS = 7      # how long the spaceship takes to paint the whole screen
 ART_DELAY = 8           # border pictures start fading in
-CARD_DELAY = 10.2       # name card starts fading in (just after the ship finishes)
+CARD_DELAY = 10.2       # name card starts fading in
 
 
 # ---------- The route of the spaceship: a smooth wandering curve that covers the whole screen ----------
@@ -224,10 +218,8 @@ def _art_svg():
         f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 {W} {H}" '
         'preserveAspectRatio="xMidYMid slice">'
         '<defs>'
-        # hides the back half of the planet's ring behind the planet
         '<mask id="behind" maskUnits="userSpaceOnUse" x="-30" y="-30" width="60" height="60">'
         '<rect x="-30" y="-30" width="60" height="60" fill="white"/><circle r="8.2" fill="black"/></mask>'
-        # chalk: slightly wobbly lines with a rough, grainy edge
         '<filter id="chalk" x="-2%" y="-2%" width="104%" height="104%">'
         '<feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" seed="5" result="warp"/>'
         '<feDisplacementMap in="SourceGraphic" in2="warp" scale="1.3" xChannelSelector="R" yChannelSelector="G" result="wobbly"/>'

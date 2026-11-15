@@ -1,4 +1,4 @@
-# Owner: Role 3 (Rebecca)
+
 from core.assessment import assess, overall_status 
 from content.guidance import get_guidance
 import streamlit as st
@@ -35,7 +35,7 @@ with st.form("checkin"):
                  "mood": mood, 
                  "stress": stress, 
                  "exercise_min": exercise}
-        st.success("Check-in saved")   # later: save_entry(entry) and show each status + advice
+        st.success("Check-in saved") 
         st.write(entry)
 
         st.title("Current Health Summary")

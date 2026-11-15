@@ -1,4 +1,4 @@
-# Owner: Role 3 (Rebecca)
+
 import pandas as pd
 import streamlit as st
 from ui.bg_mars import mars_bg
@@ -11,7 +11,7 @@ st.title("APP NAME")
 st.caption("Your personalised health monitoring buddy")
 env= sidebar()
 
-#replace w 'from core.assessment import assess' after merging
+
 def assess(indicator, value):
     return "green"
 

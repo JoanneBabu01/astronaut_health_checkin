@@ -21,10 +21,6 @@ MAX_NAME_LENGTH = 40
 DEFAULT_ENVIRONMENT = "ISS"
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M"
 
-# column: (type, lowest possible, highest possible)
-# Deliberately wide: these only reject IMPOSSIBLE values (heart rate 0,
-# temperature 50). Dangerous-but-possible readings must still be loggable so
-# assess() can flag them red.
 LIMITS = {
     "systolic_bp":   (int, 50, 260),
     "diastolic_bp":  (int, 30, 160),
@@ -75,7 +71,7 @@ def load_log(astronaut=None, path=CSV_PATH):
     with the right columns, so pages can show a friendly "no data yet" message
     instead of crashing.
     """
-    if isinstance(astronaut, Path):     # old call style: load_log(some_path)
+    if isinstance(astronaut, Path):     
         astronaut, path = None, astronaut
     path = Path(path)
     if not path.exists() or path.stat().st_size == 0:

@@ -149,22 +149,22 @@ def test_missing_indicator_columns_are_skipped():
 def test_unsorted_rows_and_two_readings_in_a_day():
     log = make_log(4, sleep_hours=[5.5, 5.0, 5.8, 5.2])
     extra = log.iloc[[1]].copy()
-    extra["timestamp"] = extra["timestamp"] - pd.Timedelta(hours=4)       # earlier the same day
-    extra["sleep_hours"] = 9.0                                            # the day's LAST reading (5.0) counts
+    extra["timestamp"] = extra["timestamp"] - pd.Timedelta(hours=4)      
+    extra["sleep_hours"] = 9.0                                           
     shuffled = pd.concat([log, extra]).sample(frac=1, random_state=1)
     assert "sleep_short" in ids(trend_flags(shuffled))
 
 
 def test_timestamps_given_as_text_still_work():
     log = make_log(4, sleep_hours=[5.5, 5.0, 5.8, 5.2])
-    log["timestamp"] = log["timestamp"].dt.strftime("%d-%m-%Y %H:%M")     # what Excel writes
+    log["timestamp"] = log["timestamp"].dt.strftime("%d-%m-%Y %H:%M")    
     assert "sleep_short" in ids(trend_flags(log))
 
 
 def test_order_is_active_first_then_red_then_newest():
-    sleep = [5.5, 5.0, 5.8] + [7.5] * 7                                   # red streak, long finished
-    systolic = [110] * 10 + [122] * 7                                     # the rise is still fresh on the last day
-    stress = [3, 3, 3] + [2] * 14                                         # amber streak, finished
+    sleep = [5.5, 5.0, 5.8] + [7.5] * 7                                  
+    systolic = [110] * 10 + [122] * 7                                     
+    stress = [3, 3, 3] + [2] * 14                                         
     flags = trend_flags(make_log(17, sleep_hours=sleep, systolic_bp=systolic, stress=stress))
     assert flags[0]["id"] == "systolic_rising" and flags[0]["active"]
     past = [f for f in flags if not f["active"]]
@@ -179,6 +179,6 @@ def test_demo_data_tells_its_story():
     if not path.exists():
         pytest.skip("sample_crew_log.csv not generated yet")
     flags = trend_flags(load_log("Commander A", path=path))
-    assert {"sleep_short", "stress_high", "mood_dip"} <= set(ids(flags))      # the stressful week
-    assert by_id(flags, "systolic_rising")["active"]                           # blood pressure climbing at the end
+    assert {"sleep_short", "stress_high", "mood_dip"} <= set(ids(flags))     
+    assert by_id(flags, "systolic_rising")["active"]                           
     assert flags[0]["active"]

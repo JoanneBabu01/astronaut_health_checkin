@@ -1,4 +1,3 @@
-# Owner: Role 2 (Latisha) + Role 3 (Rebecca)
 import streamlit as st
 from ui.bg_aurora import background
 from ui.sidebar import sidebar
