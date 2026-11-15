@@ -84,6 +84,23 @@ div[class*="st-key-panel_bodymap"] { margin-top: 16px; }
   display: flex; flex-direction: column; justify-content: center;
 }
 
+/* Centre the contents of every metric card */
+.rb-card { text-align: center; }
+
+/* Flex cards: centre horizontally as well */
+.rb-stack .rb-card,
+.rb-card.tall { align-items: center; }
+
+/* Heart rate and blood pressure in the top grid: centre both ways */
+.rb-grid .hr,
+.rb-grid .bp {
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+}
+
+/* Keep the body map bar laid out left-to-right */
+.rb-grid .bodymap { text-align: left; }
+
 </style>
 """
 
@@ -111,12 +128,22 @@ def attention_bar(overall, count):
             f'<span>{text}</span>{link}</div>')
     st.markdown(html, unsafe_allow_html=True)
 
-def stat_card(icon, label, value, unit, status, tall=False, height=None):
-    cls = "rb-card tall" if tall else "rb-card"
-    style = f' style="height:{height}px;box-sizing:border-box"' if height else ""
-    html = (f'<div class="{cls}"{style}><div class="rb-label">{icon} {label}</div>'
+def card_html(icon, label, value, unit, status):
+    return (f'<div class="rb-card"><div class="rb-label">{icon} {label}</div>'
             f'<div class="rb-value">{value}<span class="rb-unit">{unit}</span></div>'
             f'<div>{pill(status)}</div></div>')
+
+def stat_card(icon, label, value, unit, status, tall=False, height=None):
+    html = card_html(icon, label, value, unit, status)
+    if tall:
+        html = html.replace('class="rb-card"', 'class="rb-card tall"', 1)
+    if height:
+        html = html.replace('class="rb-card', f'style="height:{height}px;box-sizing:border-box" class="rb-card', 1)
+    st.markdown(html, unsafe_allow_html=True)
+
+def stat_stack(cards, height):
+    """Stack several cards so that together, with the gaps, they are exactly `height` px."""
+    html = f'<div class="rb-stack" style="height:{height}px">' + "".join(cards) + "</div>"
     st.markdown(html, unsafe_allow_html=True)
 
 def score_ring(score, status, height=180):
