@@ -138,7 +138,7 @@ The project uses two datasets. Full details are in [`data/README.md`](data/READM
 | `data/sample_crew_log.csv` | 50 days of daily check-ins for one pretend astronaut ("Commander A") | **Simulated** |
 | `data/real_inspiration4_labs.csv` | Blood-test results from the four Inspiration4 crew members, at 7 timepoints | **Real** (NASA OSDR) |
 
-The two files measure different things (daily vitals versus blood tests) and are not combined. The app shows the daily log and any readings entered through Log Vitals. The real lab data is included as a NASA reference dataset and is not shown in the app.
+The daily log (data/sample_crew_log.csv) is simulated, for one pretend astronaut; readings entered through Log Vitals are added to it. data/real_inspiration4_labs.csv holds real Inspiration4 blood tests from NASA’s Open Science Data Repository (OSD-569 and OSD-575). It measures different things (blood tests, not daily vitals), so the two files are not combined, and the real data is a reference dataset that is not shown in the app. Details are in data/README.md.
 
 The simulated log has a planted story so the charts show green, amber and red. The rising blood pressure is a **demo scenario**: NASA research reports that blood pressure in space usually stays the same or falls slightly. Mood goes from 1 (very low) to 5 (great), and stress goes from 1 (calm) to 5 (overwhelmed). Environments in the data are ISS, Transit, Lunar base and Mars base.
 
