@@ -27,17 +27,18 @@ MOON = ["🌑", "🌒", "🌓", "🌔", "🌕"]
 with st.container(key="panel_form"):
     panel_title("Today's check-in")
     with st.form("checkin", border=False):
-        c1, c2, c3 = st.columns(3, gap="medium")
+        c1, c2 = st.columns(2, gap="large")
         systolic = c1.number_input("Systolic BP (mmHg)", 70, 220, 120, help="Sit still for 5 minutes first")
         diastolic = c1.number_input("Diastolic BP (mmHg)", 40, 140, 80)
-        heart_rate = c2.number_input("Resting heart rate (bpm)", 30, 200, 65)
-        glucose = c2.number_input("Blood glucose (mg/dL)", 40, 400, 90)
-        temp = c3.number_input("Body temperature (°C)", 34.0, 42.0, 36.7, step=0.1)
-        sleep = c3.number_input("Sleep last night (hours)", 0.0, 14.0, 7.5, step=0.5)
+        heart_rate = c1.number_input("Resting heart rate (bpm)", 30, 200, 65)
         exercise = c1.number_input("Exercise today (minutes)", 0, 300, 90)
-        mood = c2.select_slider("Mood", options=[1, 2, 3, 4, 5], value=4, key="mood",
+        glucose = c2.number_input("Blood glucose (mg/dL)", 40, 400, 90)
+        temp = c2.number_input("Body temperature (°C)", 34.0, 42.0, 36.7, step=0.1)
+        sleep = c2.number_input("Sleep last night (hours)", 0.0, 14.0, 7.5, step=0.5)
+
+        mood = st.select_slider("Mood", options=[1, 2, 3, 4, 5], value=4, key="mood",
                                 format_func=lambda x: f"{MOON[x-1]} {['Very low','Low','Okay','Good','Great'][x-1]}")
-        stress = c3.select_slider("Stress", options=[1, 2, 3, 4, 5], value=2, key="stress",
+        stress = st.select_slider("Stress", options=[1, 2, 3, 4, 5], value=2, key="stress",
                                   format_func=lambda x: f"{MOON[x-1]} {['Calm','Mild','Moderate','High','Overwhelmed'][x-1]}")
         submitted = st.form_submit_button("Save check-in", type="primary", use_container_width=True)
 
