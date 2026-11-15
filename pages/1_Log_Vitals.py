@@ -67,12 +67,13 @@ with st.form("checkin"):
 
         for k in problems:
             g = get_guidance(k, statuses[k], env)
+            
         with st.expander(f"{labels[statuses[k]]}  {names[k]}: {entry[k]}", expanded=True):
             st.write(f"**What it means:** {g['meaning']}")
             st.write(f"**What to do:** {g['action']}")
             st.write(f"**When to escalate:** {g['escalate']}")
 
-        ok = [names[k] for k in names if k not in problems]
+        ok= [names[k] for k in names if k not in problems]
         if ok:
             st.caption("🟢 Normal: " + ", ".join(ok))
         
