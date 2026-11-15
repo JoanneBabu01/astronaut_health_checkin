@@ -1,5 +1,4 @@
 # core/charts.py
-# Owner: Role 2 (Latisha)
 import pandas as pd
 import plotly.graph_objects as go
 from core.thresholds import THRESHOLDS, get_bands
@@ -262,7 +261,7 @@ def _health_score(indicator, value):
         side = [b for b in bands if b[0] >= g_hi]                # bands above green, nearest first
         dist = value - g_hi
     if not side:
-        return 100.0          # green runs right to the edge of the plot range (e.g. mood 5)
+        return 100.0          # green runs right to the edge of the plot range
 
     score = 100.0
     for lo, hi, status in side:

@@ -75,8 +75,6 @@ def health_score(statuses):
 
 
 # ------------------------------------------------------------------ trend flags
-# A trend is often more useful than one bad reading. These are plain rules over
-# the recent days (counting days and comparing averages), not predictions.
 
 # (id, indicator, test on one day's value, days in a row, status, message)
 STREAK_RULES = [

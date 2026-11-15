@@ -3,7 +3,6 @@ import streamlit.components.v1 as components
 
 from core.calm_break import DEFAULT_PALETTE, calm_break_html
 
-# Rebecca adds the shared lines at the top, as on every other page:
 #   from core.theme import inject_theme
 #   from core.cover import require_login
 #   inject_theme()
@@ -15,10 +14,6 @@ st.write("A quiet minute. Catch a few stars, or just follow the circle and breat
 
 st.caption("A relaxation break for education and demonstration, not medical advice.")
 
-# Make the game fill the page area to the right of the sidebar, edge to edge.
-# The sidebar and header stay visible.
-# The page area behind the title gets the same colour the game's sky starts with,
-# so the title and the game read as one continuous background.
 st.markdown(
     """<style>
     [data-testid="stMain"], [data-testid="stHeader"], .main, .block-container {

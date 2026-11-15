@@ -16,9 +16,6 @@ try:
 except ImportError:
     STATUS_WORDS = {"green": "OK", "amber": "Watch", "red": "Act"}
 
-# Dr. Call brings its own small stylesheet, so it looks right with or without a
-# shared theme file. If the team theme has a glass-card class you prefer, put its
-# name in GLASS_CLASS (and the pulsing red one in ALERT_CLASS).
 GLASS_CLASS = "drcall-card"
 ALERT_CLASS = "drcall-alert"
 
