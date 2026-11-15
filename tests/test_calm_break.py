@@ -39,6 +39,12 @@ def test_respects_reduced_motion():
     assert "prefers-reduced-motion: reduce" in calm_break_html()
 
 
+def test_has_a_full_screen_button_that_uses_the_browser_api():
+    html = calm_break_html()
+    assert 'id="fs"' in html and "requestFullscreen" in html and "exitFullscreen" in html
+    assert ".wrap:fullscreen" in html and "fullscreenchange" in html
+
+
 def test_palette_can_be_overridden():
     html = calm_break_html({"bg_top": "#123456", "star": "#abcdef"})
     assert "#123456" in html and "#abcdef" in html

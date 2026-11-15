@@ -42,6 +42,15 @@ _TEMPLATE = """<!doctype html>
           box-shadow: 0 0 28px __RING_B__; will-change: transform; }
   #cue { font-size: 20px; margin-top: 6px; min-height: 28px; }
   .hint { font-size: 13px; opacity: .75; margin-top: 4px; }
+  #fs { background: rgba(255,255,255,.12); color: inherit; border: 1px solid rgba(255,255,255,.3);
+        border-radius: 999px; padding: 4px 14px; font-size: 13px; cursor: pointer; }
+  #fs:hover { background: rgba(255,255,255,.22); }
+  .wrap:fullscreen { max-width: none; height: 100vh; box-sizing: border-box; border-radius: 0;
+                     display: flex; flex-direction: column; padding: 12px 18px 16px;
+                     background: linear-gradient(180deg, __BG_TOP__, __BG_BOTTOM__); }
+  .wrap:fullscreen #sky { flex: 1 1 0; min-height: 0; height: auto; }
+  .wrap:fullscreen .breath { margin-top: 8px; }
+  .wrap:fullscreen #ringSpace { height: 130px; }
 </style>
 </head>
 <body>
@@ -49,6 +58,7 @@ _TEMPLATE = """<!doctype html>
   <div class="row">
     <span id="count" aria-live="polite">Stars caught: 0</span>
     <span>Click a star when you like. No timer, no score to beat.</span>
+    <button id="fs" type="button">Full screen</button>
   </div>
   <canvas id="sky" role="img" aria-label="Soft stars falling slowly. Click a star to catch it."></canvas>
   <div class="breath">
@@ -76,6 +86,7 @@ _TEMPLATE = """<!doctype html>
   function resize() {
     var dpr = window.devicePixelRatio || 1;
     W = canvas.clientWidth || 600;
+    H = canvas.clientHeight || 340;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -211,6 +222,19 @@ _TEMPLATE = """<!doctype html>
     window.requestAnimationFrame(frame);
   }
 
+  var fsButton = document.getElementById("fs");
+  var wrap = document.querySelector(".wrap");
+  if (!(document.fullscreenEnabled && wrap.requestFullscreen)) {
+    fsButton.style.display = "none";
+  }
+  fsButton.addEventListener("click", function () {
+    if (document.fullscreenElement) { document.exitFullscreen(); }
+    else { wrap.requestFullscreen(); }
+  });
+  document.addEventListener("fullscreenchange", function () {
+    fsButton.textContent = document.fullscreenElement ? "Exit full screen" : "Full screen";
+    setTimeout(resize, 50);
+  });
   window.addEventListener("resize", resize);
   resize();
   for (var n = 0; n < 12; n++) stars.push(newStar(false));
