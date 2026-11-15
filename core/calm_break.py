@@ -28,16 +28,18 @@ _TEMPLATE = """<!doctype html>
 <style>
   html, body { margin: 0; height: 100%; background: transparent; color: __TEXT__;
                font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  :root { --ring: clamp(90px, 14vh, 150px); }
   .wrap { height: 100vh; box-sizing: border-box; display: flex; flex-direction: column;
-          padding: 8px 10px 12px; background: rgba(11, 16, 38, 0.78); border-radius: 18px; }
+          padding: 10px 18px 14px; border-radius: 0;
+          background: linear-gradient(180deg, __BG_TOP__, __BG_BOTTOM__); }
   .row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
          padding: 6px 4px 10px; font-size: 14px; opacity: .92; }
-  #sky { display: block; width: 100%; flex: 1 1 0; min-height: 200px; border-radius: 16px;
-         background: linear-gradient(180deg, __BG_TOP__, __BG_BOTTOM__);
-         touch-action: manipulation; }
+  #sky { display: block; width: 100%; flex: 1 1 0; min-height: 200px; border-radius: 0;
+         background: transparent; touch-action: manipulation; }
   .breath { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
-  #ringSpace { height: 184px; display: flex; align-items: center; justify-content: center; }
-  #ring { width: 100px; height: 100px; border-radius: 50%;
+  #ringSpace { height: calc(var(--ring) * 1.6 + 24px); display: flex; align-items: center;
+               justify-content: center; }
+  #ring { width: var(--ring); height: var(--ring); border-radius: 50%;
           background: radial-gradient(circle at 35% 30%, __RING_A__, __RING_B__);
           box-shadow: 0 0 28px __RING_B__; will-change: transform; }
   #cue { font-size: 20px; margin-top: 6px; min-height: 28px; }
@@ -45,8 +47,7 @@ _TEMPLATE = """<!doctype html>
   #fs { background: rgba(255,255,255,.12); color: inherit; border: 1px solid rgba(255,255,255,.3);
         border-radius: 999px; padding: 4px 14px; font-size: 13px; cursor: pointer; }
   #fs:hover { background: rgba(255,255,255,.22); }
-  .wrap:fullscreen { border-radius: 0; padding: 12px 18px 16px;
-                     background: linear-gradient(180deg, __BG_TOP__, __BG_BOTTOM__); }
+  .wrap:fullscreen { border-radius: 0; padding: 12px 18px 16px; }
 </style>
 </head>
 <body>
