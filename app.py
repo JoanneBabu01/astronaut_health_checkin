@@ -1,9 +1,11 @@
 # Owner: Role 3 (Rebecca)
 import pandas as pd
 import streamlit as st
-from ui import sidebar
+from ui.bg_mars import mars_bg
+from ui.sidebar import sidebar
 from core.data import load_log
 
+bg= mars_bg()
 st.set_page_config(page_title="APP_NAME", page_icon="🚀", layout="wide")
 st.title("APP NAME")
 st.caption("Your personalised health monitoring buddy")
