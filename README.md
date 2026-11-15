@@ -6,7 +6,7 @@ Built for the NASA Space Apps Challenge: *Create Health Monitoring Software for 
 
 > **Decision support only, not a medical diagnosis.** This is a prototype for education and demonstration.
 
-** Live app:** [paste the Streamlit link here]
+** Live app:** https://astronaut-health-checkin.streamlit.app/
 
 ![Home dashboard](docs/home.png)
 ![Log Vitals with advice](docs/log_vitals.png)
@@ -27,9 +27,9 @@ The challenge asks for software that gathers health indicators and lets astronau
 - **Log Vitals:** an astronaut enters a daily check-in (blood pressure, heart rate, glucose, temperature, sleep, mood, stress, exercise).
 - **Green / amber / red status:** every reading is checked against a range and shown as a traffic light (labelled OK, Watch and Act in the app).
 - **Plain-language advice:** each status comes with three short sentences: what it means, what to do, and when to tell the crew doctor. The advice is different for "too low" and "too high".
-- **Body Map:** a human figure. Hover over a body area to highlight the related reading and its status.
+- **Body Map:** a human figure. Hover over or click a body area to see the related reading and its status.
 - **Trends:** charts over time with shaded green, amber and red bands.
-- **Mission Tasks:** a checklist with points and badges to encourage daily check-ins.
+- **Calm Break:** a quiet minute for astronauts. Click drifting stars if you like, or follow a breathing circle (in for 4 seconds, out for 6). There is no timer and no score. It is a relaxation break for education and demonstration, not medical advice.
 - **Learn:** how to measure each indicator, and why it matters in space.
 
 ## How it works
@@ -60,7 +60,7 @@ This was a deliberate choice:
 You need Python 3.10 or newer. The app was developed with Python 3.13.
 
 ```bash
-git clone git clone https://github.com/JoanneBabu01/astronaut_health_checkin.git
+git clone https://github.com/JoanneBabu01/astronaut_health_checkin.git
 cd astronaut_health_checkin
 python -m pip install -r requirements.txt
 python -m streamlit run app.py
@@ -81,10 +81,10 @@ If you have several Python versions installed on Windows, you can pick one, for 
 | `core/charts.py` | All charts | Latisha |
 | `content/guidance.py` | Advice text and how-to-measure steps | Joanne|
 | `content/learn.py` | Space hazard to indicator table | Joanne |
-| `data/sample_crew_log.csv` | Simulated readings | Rochelle |
 | `data/` | Simulated log, real lab data and the data README | Rochelle |
 | `scripts/` | Scripts that generate and prepare the data | Rochelle |
 | `tests/` | Automated tests | Rochelle |
+| `pages/6_Calm_Break.py` | Calm Break page (stars and breathing guide) | Rochelle |
 
 ## Limitations
 
@@ -92,9 +92,10 @@ If you have several Python versions installed on Windows, you can pick one, for 
 - **Ranges are common adult reference ranges, not spaceflight limits.** Real flight medicine compares each astronaut with their own baseline, which this version does not do.
 - **Not a medical device.** The app gives general guidance only.
 - **Some hazards are not covered.** Space radiation and the closed, hostile environment are not tracked.
-- **Environment-specific advice.** [Confirm: the app records the environment, but the escalation advice is the same everywhere. Messages on the Moon or Mars would need to account for delayed communication.]
+- **Environment-specific advice is future work.** The app records the environment (ISS, Transit, Lunar base or Mars base), but the advice is the same in every environment. Escalation on the Moon or Mars would need to account for delayed communication.
 - **Bone and immune changes are not covered.** They need lab tests rather than daily check-ins, and are future work.
 - Advice thresholds such as "3 days" are our own draft rules, not NASA rules.
+- **Calm Break is a short break, not a treatment.** It has not been tested for any health effect.   
 
 ## Sources
 
@@ -111,15 +112,15 @@ If you have several Python versions installed on Windows, you can pick one, for 
 
 | Name | Role |
 |---|---|
-| Rebecca D'zousa | App and pages |
+| Rebecca Dsouza | App and pages |
 | Rochelle D'mello | Data and ranges |
-| Latisha D'britto | Charts and body map |
+| Latisha Dbritto | Charts and body map |
 | Joanne Babu | Content, repo and documentation |
 
-## Credits and AI use
+## Credits and SI use
 Data from the NASA Open Science Data Repository, Inspiration4 studies OSD-569 and OSD-575. Details are in `data/README.md`.
 
-Built with Python, Streamlit, pandas and Plotly. AI assistance (Claude) was used for research support and drafting; the team reviewed and tested all outputs. 
+Built with Python, Streamlit, pandas and Plotly. Super Intelligence (SI) tools were used during development; see "Use of SI tools" above for details. The team reviewed and tested all outputs.
 
 ## Data
 
@@ -136,4 +137,3 @@ The simulated log has a planted story so the charts show green, amber and red. T
 
 The real data comes from the Inspiration4 mission (four civilians, about three days in space): 4 crew members, 41 analytes, 7 timepoints, 1,034 measurements.
 
-Thank you to NASA for the open information used in this project.
