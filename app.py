@@ -4,21 +4,30 @@ import plotly.express as px
 import streamlit as st
 from ui.sidebar import sidebar
 from ui.bg_mars import background
-from ui.dashboard import (inject_css, hero, attention_bar, stat_card, panel_title, glass, score_ring, pill, vitals_row,
+from ui.dashboard import (inject_css, hero, attention_bar, stat_card, panel_title, glass, pill, vitals_row,
                           card_html, stat_stack)
 from core.data import load_log
-from core.assessment import assess_row, overall_status, health_score, trend_flags  # check file names
+from core.assessment import assess_row, overall_status, health_score, trend_flags
 from core.charts import trend_chart
 from content.guidance import get_guidance
-# from <Person A's file> import dr_call_panel
+from core.drcall import dr_call_panel
 
 st.set_page_config(page_title="APP NAME", page_icon="🚀", layout="wide")
 bg= background()
 env = sidebar()
 inject_css()
 NO_BAR = {"displayModeBar": False}
+PANEL_H = 380
+
+NAMES = {"systolic_bp": "Systolic BP", "diastolic_bp": "Diastolic BP", "heart_rate": "Heart rate",
+            "blood_glucose": "Blood glucose", "body_temp": "Body temperature", "sleep_hours": "Sleep",
+            "mood": "Mood", "stress": "Stress", "exercise_min": "Exercise"}
 
 df = load_log(st.session_state.astronaut).sort_values("timestamp")
+if df.empty:
+    st.info("No check-ins yet. Log your first one to see your dashboard.")
+    st.page_link("pages/1_Log_Vitals.py", label="Log vitals →")
+    st.stop()
 latest = df.iloc[-1]
 INDICATORS = ["systolic_bp", "diastolic_bp", "heart_rate", "blood_glucose",
               "body_temp", "sleep_hours", "mood", "stress", "exercise_min"]
@@ -46,8 +55,6 @@ vitals_row(score, overall,
            latest["heart_rate"], statuses["heart_rate"],
            f"{latest['systolic_bp']}/{latest['diastolic_bp']}", worst("systolic_bp", "diastolic_bp"))
 
-
-PANEL_H = 380
 
 # 4. Glucose + temperature stacked | blood pressure chart
 c1, c2 = st.columns([1, 2], gap="medium")
@@ -108,10 +115,15 @@ with st.container(key="panel_attention"):
         st.write("Nothing to act on. Keep up the routine. 🚀")
     for k in problems:
         g = get_guidance(k, statuses[k], env)
-        st.markdown(f"{pill(statuses[k])} **{k.replace('_', ' ').title()}: {reading[k]}**",
+        st.markdown(f"{pill(statuses[k])} **{NAMES[k]}: {reading[k]}**",
                     unsafe_allow_html=True)
         st.write(f"{g['action']} *Escalate:* {g['escalate']}")
     if statuses["mood"] != "green" or statuses["stress"] != "green":
         st.page_link("pages/6_Calm_Break.py", label="🧘 Take a calm break")
-    # if overall == "red":
-    #     dr_call_panel(statuses, env, reading, st.session_state.astronaut)
+
+st.write("")
+
+# 8. Dr. Call: simulated call to the flight surgeon
+with st.container(key="panel_drcall"):
+    panel_title("📞 Call the flight surgeon")
+    dr_call_panel(statuses, env, reading, st.session_state.astronaut)
