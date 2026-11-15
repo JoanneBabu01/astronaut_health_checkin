@@ -1,15 +1,15 @@
 # Owner: Role 3 (Rebecca)
 import pandas as pd
 import streamlit as st
-from ui.bg_mars import mars_bg
+from ui.bg_mars import background
 from ui.sidebar import sidebar
 from core.data import load_log
 
-bg= mars_bg()
+bg= background()
+env= sidebar()
 st.set_page_config(page_title="APP_NAME", page_icon="🚀", layout="wide")
 st.title("APP NAME")
 st.caption("Your personalised health monitoring buddy")
-env= sidebar()
 
 #replace w 'from core.assessment import assess' after merging
 def assess(indicator, value):

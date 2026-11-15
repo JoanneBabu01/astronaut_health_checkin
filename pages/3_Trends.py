@@ -6,6 +6,7 @@ from core.data import load_log
 from core.charts import trend_chart
 
 bg= background()
+st.set_page_config(page_title="TRENDS", page_icon="📈", layout="wide")
 env= sidebar()
 st.title("Trends")
 df= load_log()

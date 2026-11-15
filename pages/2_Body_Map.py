@@ -8,6 +8,7 @@ from core.charts import body_map_figure, trend_chart
 from content.guidance import get_guidance
 
 bg= background()
+st.set_page_config(page_title="BODY MAP", page_icon="🩻", layout="wide")
 env= sidebar()
 st.title("Body map")
 st.caption("Tap a body system to see how it's doing and what to do.")
