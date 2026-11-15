@@ -316,3 +316,69 @@ def health_radar(latest):
         height=480, margin=dict(l=60, r=60, t=60, b=40),
     )
     return fig
+
+
+
+# ---------- Lab results by timepoint (one line per crew member, shaded normal range) ----------
+CREW_COLOURS = [theme["line"], theme["avg"], "#6fd3e6", "#9db0ff", "#d9b8ff", "#8fe3d2"]
+
+
+def analyte_chart(df, analyte):
+    """Lab-style chart for one analyte, e.g. "white_blood_cell_count" or "glucose".
+    df needs the columns: analyte, value, timepoint_order, crew, ref_min, ref_max.
+    One line per crew member, with the normal range (ref_min to ref_max) shaded green."""
+    name = str(analyte).replace("_", " ").title()
+    needed = {"analyte", "value", "timepoint_order", "crew", "ref_min", "ref_max"}
+    fig = go.Figure()
+    if df is None or df.empty or not needed.issubset(df.columns):
+        fig.update_layout(template="plotly_dark", title=f"{name}: no data yet")
+        return fig
+
+    d = df[df["analyte"] == analyte].dropna(subset=["value", "timepoint_order"]).copy()
+    d = d.sort_values(["crew", "timepoint_order"])
+    if d.empty:
+        fig.update_layout(template="plotly_dark", title=f"{name}: no data yet")
+        return fig
+
+    unit = d["unit"].dropna().iloc[0] if "unit" in d.columns and d["unit"].notna().any() else ""
+    lo, hi = d["ref_min"].median(), d["ref_max"].median()
+
+    # y-range: always show the whole normal range, plus the data
+    ymin, ymax = min(d["value"].min(), lo), max(d["value"].max(), hi)
+    pad = max(ymax - ymin, 1e-6) * 0.15
+    ymin, ymax = ymin - pad, ymax + pad
+
+    fig.add_hrect(
+        y0=lo, y1=hi, layer="below", line_width=0,
+        fillcolor=_rgba(status_colours["green"], 0.18),
+        annotation_text=f"Normal range ({lo:g} to {hi:g})", annotation_position="top right",
+        annotation_font=dict(color=status_colours["green"], size=12),
+    )
+
+    for i, (crew, g) in enumerate(d.groupby("crew", sort=True)):
+        fig.add_trace(go.Scatter(
+            x=g["timepoint_order"], y=g["value"], mode="lines+markers", name=str(crew),
+            line=dict(color=CREW_COLOURS[i % len(CREW_COLOURS)], width=2), marker=dict(size=7),
+            hovertemplate="%{x}: %{y} " + unit + f"<extra>{crew}</extra>",
+        ))
+
+    out = d[(d["value"] < lo) | (d["value"] > hi)]
+    if not out.empty:
+        fig.add_trace(go.Scatter(
+            x=out["timepoint_order"], y=out["value"], mode="markers", name="Outside normal range",
+            marker=dict(size=13, color="rgba(0,0,0,0)", line=dict(color=status_colours["amber"], width=2)),
+            hoverinfo="skip",
+        ))
+
+    fig.update_layout(
+        template="plotly_dark",
+        title=f"{name} by timepoint",
+        xaxis_title="Timepoint", yaxis_title=f"{name} ({unit})" if unit else name,
+        paper_bgcolor=theme["bg"], plot_bgcolor=theme["panel"],
+        font=dict(color=theme["text"]),
+        xaxis=dict(gridcolor=theme["grid"], dtick=1),
+        yaxis=dict(range=[ymin, ymax], gridcolor=theme["grid"]),
+        legend=dict(orientation="h", y=-0.25),
+        height=440, margin=dict(l=40, r=20, t=60, b=40),
+    )
+    return fig
