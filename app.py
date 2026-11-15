@@ -12,7 +12,7 @@ from core.charts import trend_chart
 from content.guidance import get_guidance
 from core.drcall import dr_call_panel
 
-st.set_page_config(page_title="APP NAME", page_icon="🚀", layout="wide")
+st.set_page_config(page_title="HOME", page_icon="🚀", layout="wide")
 bg= background()
 env = sidebar()
 inject_css()
