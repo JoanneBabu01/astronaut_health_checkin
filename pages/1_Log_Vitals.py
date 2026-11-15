@@ -15,7 +15,6 @@ st.title("Log vitals")
 st.caption("Take your measurements, enter them below, and get instant feedback.")
 inject_css()
 
-# >>> paste your moon slider CSS st.markdown(...) block here <<<
 
 NAMES = {"systolic_bp": ("Systolic BP", "mmHg"), "diastolic_bp": ("Diastolic BP", "mmHg"),
          "heart_rate": ("Heart rate", "bpm"), "blood_glucose": ("Blood glucose", "mg/dL"),

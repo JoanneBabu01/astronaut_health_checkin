@@ -12,7 +12,7 @@ from core.charts import trend_chart
 from content.guidance import get_guidance
 from core.drcall import dr_call_panel
 
-st.set_page_config(page_title="APP NAME", page_icon="🚀", layout="wide")
+st.set_page_config(page_title="NYX", page_icon="🚀", layout="wide")
 bg= background()
 env = sidebar()
 inject_css()
@@ -23,21 +23,24 @@ NAMES= {"systolic_bp": "Systolic BP", "diastolic_bp": "Diastolic BP", "heart_rat
         "blood_glucose": "Blood glucose", "body_temp": "Body temperature", "sleep_hours": "Sleep",
         "mood": "Mood", "stress": "Stress", "exercise_min": "Exercise"}
 
+INDICATORS= list(NAMES)
+ORDER= ["green", "amber", "red"]
+
 df = load_log(st.session_state.astronaut).sort_values("timestamp")
 if df.empty:
     st.info("No check-ins yet. Log your first one to see your dashboard.")
     st.page_link("pages/1_Log_Vitals.py", label="Log vitals →")
     st.stop()
 latest = df.iloc[-1]
-INDICATORS = ["systolic_bp", "diastolic_bp", "heart_rate", "blood_glucose",
-              "body_temp", "sleep_hours", "mood", "stress", "exercise_min"]
+
 reading = {k: latest[k] for k in INDICATORS}
 statuses = assess_row(reading)
 overall = overall_status(reading)
 score = health_score(statuses)
-problems = [k for k, s in statuses.items() if s!= "green"]
-ORDER = ["green", "amber", "red"]
-worst = lambda *ks: max((statuses[k] for k in ks), key=ORDER.index)
+problems = [k for k, s in statuses.items() if s != "green"]
+
+def worst(*keys):
+    return max((statuses[k] for k in keys), key=ORDER.index)
 
 # 1. Greeting banner
 hour = pd.Timestamp.now().hour
@@ -55,6 +58,7 @@ vitals_row(score, overall,
            latest["heart_rate"], statuses["heart_rate"],
            f"{latest['systolic_bp']}/{latest['diastolic_bp']}", worst("systolic_bp", "diastolic_bp"))
 
+st.write("")
 
 # 4. Glucose + temperature stacked | blood pressure chart
 c1, c2 = st.columns([1, 2], gap="medium")
