@@ -7,6 +7,7 @@ from ui.sidebar import sidebar
 
 bg= background()
 env= sidebar()
+st.set_page_config(page_title="LOG VITALS", page_icon="🧬", layout="wide")
 st.title("Log vitals")
 
 with st.form("checkin"):
