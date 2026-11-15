@@ -85,6 +85,7 @@ If you have several Python versions installed on Windows, you can pick one, for 
 | `data/` | Simulated log, real lab data and the data README | Rochelle |
 | `scripts/` | Scripts that generate and prepare the data | Rochelle |
 | `tests/` | Automated tests | Rochelle |
+| `ui/` | Sidebar and backgrounds | Rebecca |
 | `pages/6_Calm_Break.py` | Calm Break page (stars and breathing guide) | Rochelle |
 
 ## Limitations
