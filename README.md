@@ -12,6 +12,7 @@ Built for the NASA Space Apps Challenge: *Create Health Monitoring Software for 
 ![Log Vitals with advice](docs/log_vitals.png)
 ![Trends with colour bands](docs/trends.png)
 ![Body Map](docs/body_map.png)
+![Blood pressure gauges](docs/gauges.png)
 
 ---
 
@@ -24,7 +25,7 @@ The challenge asks for software that gathers health indicators and lets astronau
 ## What it does
 
 - **Log Vitals:** an astronaut enters a daily check-in (blood pressure, heart rate, glucose, temperature, sleep, mood, stress, exercise).
-- **Green / amber / red status:** every reading is checked against a range and shown as a traffic light.
+- **Green / amber / red status:** every reading is checked against a range and shown as a traffic light (labelled OK, Watch and Act in the app).
 - **Plain-language advice:** each status comes with three short sentences: what it means, what to do, and when to tell the crew doctor. The advice is different for "too low" and "too high".
 - **Body Map:** a human figure. Hover over a body area to highlight the related reading and its status.
 - **Trends:** charts over time with shaded green, amber and red bands.
@@ -67,15 +68,6 @@ python -m streamlit run app.py
 
 If you have several Python versions installed on Windows, you can pick one, for example: `python -V:3.13 -m streamlit run app.py`
 
-## Data
-
-All readings in this project are **simulated**. They are not real astronaut data.
-
-- `data/sample_crew_log.csv` holds about 50 days of check-ins for one example astronaut (Commander A).
-- Columns: `timestamp, astronaut, environment, systolic_bp, diastolic_bp, heart_rate, blood_glucose, body_temp, sleep_hours, mood, stress, exercise_min`
-- Environments in the data: ISS, Transit, Lunar base, Mars base.
-- Scales: mood goes from 1 (very low) to 5 (great). Stress goes from 1 (calm) to 5 (overwhelmed).
-- The sample data includes a **deliberate rising blood pressure trend** so the app has something to flag. This is a demo scenario. NASA research reports that blood pressure in space usually stays the same or falls slightly, so this trend should not be read as a typical spaceflight effect.
 
 ## Project structure
 
@@ -138,7 +130,7 @@ The project uses two datasets. Full details are in [`data/README.md`](data/READM
 | `data/sample_crew_log.csv` | 50 days of daily check-ins for one pretend astronaut ("Commander A") | **Simulated** |
 | `data/real_inspiration4_labs.csv` | Blood-test results from the four Inspiration4 crew members, at 7 timepoints | **Real** (NASA OSDR) |
 
-The daily log (data/sample_crew_log.csv) is simulated, for one pretend astronaut; readings entered through Log Vitals are added to it. data/real_inspiration4_labs.csv holds real Inspiration4 blood tests from NASA’s Open Science Data Repository (OSD-569 and OSD-575). It measures different things (blood tests, not daily vitals), so the two files are not combined, and the real data is a reference dataset that is not shown in the app. Details are in data/README.md.
+The daily log (`data/sample_crew_log.csv`) is simulated, for one pretend astronaut; readings entered through Log Vitals are added to it. `data/real_inspiration4_labs.csv` holds real Inspiration4 blood tests from NASA's Open Science Data Repository (OSD-569 and OSD-575). It measures different things (blood tests, not daily vitals), so the two files are not combined, and the real data is a reference dataset that is not shown in the app. Details are in `data/README.md`.
 
 The simulated log has a planted story so the charts show green, amber and red. The rising blood pressure is a **demo scenario**: NASA research reports that blood pressure in space usually stays the same or falls slightly. Mood goes from 1 (very low) to 5 (great), and stress goes from 1 (calm) to 5 (overwhelmed). Environments in the data are ISS, Transit, Lunar base and Mars base.
 
