@@ -19,9 +19,9 @@ inject_css()
 NO_BAR = {"displayModeBar": False}
 PANEL_H = 380
 
-NAMES = {"systolic_bp": "Systolic BP", "diastolic_bp": "Diastolic BP", "heart_rate": "Heart rate",
-            "blood_glucose": "Blood glucose", "body_temp": "Body temperature", "sleep_hours": "Sleep",
-            "mood": "Mood", "stress": "Stress", "exercise_min": "Exercise"}
+NAMES= {"systolic_bp": "Systolic BP", "diastolic_bp": "Diastolic BP", "heart_rate": "Heart rate",
+        "blood_glucose": "Blood glucose", "body_temp": "Body temperature", "sleep_hours": "Sleep",
+        "mood": "Mood", "stress": "Stress", "exercise_min": "Exercise"}
 
 df = load_log(st.session_state.astronaut).sort_values("timestamp")
 if df.empty:
