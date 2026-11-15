@@ -17,6 +17,7 @@ COLUMNS = [
 ]
 ENVIRONMENTS = ["ISS", "Transit", "Lunar base", "Mars base"]
 DEFAULT_ASTRONAUT = "Commander A"
+MAX_NAME_LENGTH = 40
 DEFAULT_ENVIRONMENT = "ISS"
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M"
 
@@ -64,12 +65,18 @@ def _parse_timestamps(values):
     return parsed
 
 
-def load_log(path=CSV_PATH):
-    """Return the whole log as a DataFrame, oldest first.
+def load_log(astronaut=None, path=CSV_PATH):
+    """Return the log as a DataFrame, oldest first.
 
-    A missing or empty file gives an empty DataFrame with the right columns,
-    so pages can show a friendly "no data yet" message instead of crashing.
+    astronaut: if given, only that astronaut's rows. Names match ignoring upper
+    or lower case and spaces at the ends, so "commander a " finds "Commander A".
+
+    A missing or empty file, or a name with no rows, gives an empty DataFrame
+    with the right columns, so pages can show a friendly "no data yet" message
+    instead of crashing.
     """
+    if isinstance(astronaut, Path):     # old call style: load_log(some_path)
+        astronaut, path = None, astronaut
     path = Path(path)
     if not path.exists() or path.stat().st_size == 0:
         return pd.DataFrame(columns=COLUMNS)
@@ -77,6 +84,9 @@ def load_log(path=CSV_PATH):
     if df.empty:
         return pd.DataFrame(columns=COLUMNS)
     df["timestamp"] = _parse_timestamps(df["timestamp"])
+    if astronaut is not None:
+        wanted = str(astronaut).strip().casefold()
+        df = df[df["astronaut"].astype(str).str.strip().str.casefold() == wanted]
     return df.sort_values("timestamp").reset_index(drop=True)
 
 
@@ -110,7 +120,10 @@ def validate_entry(entry):
     if environment not in ENVIRONMENTS:
         problems.append(f"environment must be one of {ENVIRONMENTS}")
     clean["environment"] = environment
-    clean["astronaut"] = entry.get("astronaut") or DEFAULT_ASTRONAUT
+    name = str(entry.get("astronaut") or "").strip() or DEFAULT_ASTRONAUT
+    if len(name) > MAX_NAME_LENGTH or any(ord(ch) < 32 for ch in name):
+        problems.append(f"astronaut name must be at most {MAX_NAME_LENGTH} characters, on one line")
+    clean["astronaut"] = name
 
     stamp = entry.get("timestamp") or datetime.now()
     try:
