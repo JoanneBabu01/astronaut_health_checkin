@@ -26,22 +26,28 @@ _TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  html, body { margin: 0; background: transparent; color: __TEXT__;
+  html, body { margin: 0; height: 100%; background: transparent; color: __TEXT__;
                font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 8px 10px 16px;
-          background: rgba(11, 16, 38, 0.78); border-radius: 18px; }
+  :root { --ring: clamp(90px, 14vh, 150px); }
+  .wrap { height: 100vh; box-sizing: border-box; display: flex; flex-direction: column;
+          padding: 10px 18px 14px; border-radius: 0;
+          background: linear-gradient(180deg, __BG_TOP__, __BG_BOTTOM__); }
   .row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
          padding: 6px 4px 10px; font-size: 14px; opacity: .92; }
-  #sky { display: block; width: 100%; height: 340px; border-radius: 16px;
-         background: linear-gradient(180deg, __BG_TOP__, __BG_BOTTOM__);
-         touch-action: manipulation; }
-  .breath { display: flex; flex-direction: column; align-items: center; margin-top: 18px; }
-  #ringSpace { height: 150px; display: flex; align-items: center; justify-content: center; }
-  #ring { width: 100px; height: 100px; border-radius: 50%;
+  #sky { display: block; width: 100%; flex: 1 1 0; min-height: 200px; border-radius: 0;
+         background: transparent; touch-action: manipulation; }
+  .breath { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
+  #ringSpace { height: calc(var(--ring) * 1.6 + 24px); display: flex; align-items: center;
+               justify-content: center; }
+  #ring { width: var(--ring); height: var(--ring); border-radius: 50%;
           background: radial-gradient(circle at 35% 30%, __RING_A__, __RING_B__);
           box-shadow: 0 0 28px __RING_B__; will-change: transform; }
   #cue { font-size: 20px; margin-top: 6px; min-height: 28px; }
   .hint { font-size: 13px; opacity: .75; margin-top: 4px; }
+  #fs { background: rgba(255,255,255,.12); color: inherit; border: 1px solid rgba(255,255,255,.3);
+        border-radius: 999px; padding: 4px 14px; font-size: 13px; cursor: pointer; }
+  #fs:hover { background: rgba(255,255,255,.22); }
+  .wrap:fullscreen { border-radius: 0; padding: 12px 18px 16px; }
 </style>
 </head>
 <body>
@@ -49,6 +55,7 @@ _TEMPLATE = """<!doctype html>
   <div class="row">
     <span id="count" aria-live="polite">Stars caught: 0</span>
     <span>Click a star when you like. No timer, no score to beat.</span>
+    <button id="fs" type="button">Full screen</button>
   </div>
   <canvas id="sky" role="img" aria-label="Soft stars falling slowly. Click a star to catch it."></canvas>
   <div class="breath">
@@ -76,6 +83,7 @@ _TEMPLATE = """<!doctype html>
   function resize() {
     var dpr = window.devicePixelRatio || 1;
     W = canvas.clientWidth || 600;
+    H = canvas.clientHeight || 340;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -88,7 +96,7 @@ _TEMPLATE = """<!doctype html>
   function newStar(fromTop) {
     return {
       x: rand(30, Math.max(60, W - 30)),
-      y: fromTop ? rand(-60, -10) : rand(0, H),
+      y: fromTop ? rand(-40, -10) : rand(20, Math.max(40, H - 60)),
       r: rand(11, 18),
       vy: rand(14, 30),
       sway: rand(0.4, 1.2),
@@ -98,8 +106,13 @@ _TEMPLATE = """<!doctype html>
     };
   }
 
+  function fadeAt(y) {
+    var edge = 60;
+    return Math.max(0, Math.min(1, (y + 20) / edge, (H - y) / edge));
+  }
+
   function drawStar(s, t) {
-    var glow = 0.75 + 0.25 * Math.sin(t * 1.5 + s.phase);
+    var glow = (0.75 + 0.25 * Math.sin(t * 1.5 + s.phase)) * fadeAt(s.y);
     ctx.save();
     ctx.translate(s.x, s.y);
     ctx.rotate(s.rot + (reduce ? 0 : Math.sin(t * 0.6 + s.phase) * 0.15));
@@ -192,7 +205,7 @@ _TEMPLATE = """<!doctype html>
       var s = stars[j];
       s.y += s.vy * SPEED * dt;
       s.x += Math.sin(t * s.sway + s.phase) * 8 * SPEED * dt;
-      if (s.y > H + 30) stars[j] = newStar(true);
+      if (s.y > H - 4) stars[j] = newStar(true);
       drawStar(stars[j], t);
     }
 
@@ -211,6 +224,19 @@ _TEMPLATE = """<!doctype html>
     window.requestAnimationFrame(frame);
   }
 
+  var fsButton = document.getElementById("fs");
+  var wrap = document.querySelector(".wrap");
+  if (!(document.fullscreenEnabled && wrap.requestFullscreen)) {
+    fsButton.style.display = "none";
+  }
+  fsButton.addEventListener("click", function () {
+    if (document.fullscreenElement) { document.exitFullscreen(); }
+    else { wrap.requestFullscreen(); }
+  });
+  document.addEventListener("fullscreenchange", function () {
+    fsButton.textContent = document.fullscreenElement ? "Exit full screen" : "Full screen";
+    setTimeout(resize, 50);
+  });
   window.addEventListener("resize", resize);
   resize();
   for (var n = 0; n < 12; n++) stars.push(newStar(false));
