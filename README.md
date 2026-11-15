@@ -1,11 +1,12 @@
-# Astronaut Health Check-in
-
+# NYX
+### Astronaut Health Check-in
 **A simple health check-in app that helps astronauts spot changes in their own health and decide what to do next.**
 
 Built for the NASA Space Apps Challenge: *Create Health Monitoring Software for Astronauts on Space Missions.*
 
 > **Decision support only, not a medical diagnosis.** This is a prototype for education and demonstration.
 
+**App name:** NYX, the Astronaut Health Check-in
 ** Live app:** https://astronaut-health-checkin.streamlit.app/
 
 ![Home dashboard](docs/home.png)
